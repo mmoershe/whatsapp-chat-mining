@@ -1,4 +1,6 @@
-import os, shutil
+import os
+import shutil
+
 
 def get_initial_txt_path(input_directory: str) -> str: 
     if os.path.exists(os.path.join(input_directory, 'original_data.txt')):
@@ -7,6 +9,16 @@ def get_initial_txt_path(input_directory: str) -> str:
     all_txts: list = [txt for txt in os.listdir(input_directory) if txt.endswith('.txt')]
     assert len(all_txts) == 1, "Either too many or none txt files were found in the input directory."
     return os.path.join(input_directory, all_txts[0])
+
+
+def create_clean_temp_dir(TEMP_DIR: str) -> None:
+    if os.path.exists(TEMP_DIR) and len(os.listdir(TEMP_DIR)) > 0:
+        all_temp_files: list = [file for file in os.listdir(TEMP_DIR)]
+        print(f"Found {len(all_temp_files)} files in the tempo directory {all_temp_files}. They will be deleted.")
+        shutil.rmtree(TEMP_DIR)
+    if not os.path.exists(TEMP_DIR):
+        print(f"Creating temp directory at {TEMP_DIR}.")
+        os.makedirs(TEMP_DIR)
 
     
     
@@ -18,5 +30,3 @@ def clean_txt(txt_directory: str, clean_txt_name: str = 'clean_data.txt') -> Non
             line: str = line.strip()
             if '<' in line and '>' in line: 
                 errors.add(line[line.find('<'):line.find('>')+1:])
-    print(errors)
-    pass
