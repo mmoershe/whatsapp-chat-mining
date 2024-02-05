@@ -17,3 +17,7 @@ CLEAN_PATH: str = os.path.join(TEMP_DIR, CLEAN_NAME)
 # name of / path to the csv file that will be created. 
 CSV_NAME: str = 'chat.csv'
 CSV_PATH: str = os.path.join(TEMP_DIR, CSV_NAME)
+
+# name of / path to the json file that includes some basic metadata
+SIMPLE_METADATA_NAME: str = 'metadata.json'
+SIMPLE_METADATA_PATH: str = os.path.join(TEMP_DIR, SIMPLE_METADATA_NAME)

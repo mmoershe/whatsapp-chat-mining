@@ -1,14 +1,33 @@
 import os
+import sys
 import shutil
 
 
-def get_initial_txt_path(input_directory: str) -> str: 
-    if os.path.exists(os.path.join(input_directory, 'original_data.txt')):
-        return os.path.join(input_directory, 'original_data.txt')     
-    assert os.path.exists(input_directory), f"{input_directory = } doesn't exist."  
-    all_txts: list = [txt for txt in os.listdir(input_directory) if txt.endswith('.txt')]
-    assert len(all_txts) == 1, "Either too many or none txt files were found in the input directory."
-    return os.path.join(input_directory, all_txts[0])
+def get_initial_txt_path(input_directory: str) -> str:    
+    all_txts: list = [file for file in os.listdir(input_directory) if file.endswith('.txt')]
+    if len(all_txts) == 0:
+        print('no input txts found.')
+        sys.exit()  
+        return
+    if len(all_txts) == 1:
+        return os.path.join(input_directory, all_txts[0])
+    while True: 
+        print('Several txts were found in the input folder. Please choose one file.')
+        for i, txt in enumerate(all_txts):
+            print(i+1, txt)
+        user_input = input('\t>>> ')
+        try: 
+            choice: str = all_txts[int(user_input)-1]
+        except ValueError: 
+            print("\n\tPlease enter a whole number!")
+            continue
+        except IndexError: 
+            print(f"\n\tPlease enter a number from 1 to {len(all_txts)}")
+            continue
+        else: 
+            return os.path.join(input_directory, choice)
+        finally: 
+            print()
 
 
 def create_clean_temp_dir(TEMP_DIR: str) -> None:
@@ -20,13 +39,26 @@ def create_clean_temp_dir(TEMP_DIR: str) -> None:
         print(f"Creating temp directory at {TEMP_DIR}.")
         os.makedirs(TEMP_DIR)
 
-    
-    
-def clean_txt(txt_directory: str, clean_txt_name: str = 'clean_data.txt') -> None: 
-    shutil.copy(txt_directory, os.path.join(os.path.dirname(txt_directory), clean_txt_name))
-    with open(txt_directory, 'r', encoding='utf-8') as f:
+
+def clean_txt(input_dir: str, clean_dir: str) -> None: 
+    shutil.copy(input_dir, os.path.join(os.path.dirname(input_dir), clean_dir))
+    with open(input_dir, 'r', encoding='utf-8') as f:
         errors: list = set()
         for i, line in enumerate(f.readlines()):
             line: str = line.strip()
             if '<' in line and '>' in line: 
                 errors.add(line[line.find('<'):line.find('>')+1:])
+    print(errors)
+
+
+def create_simple_metadata(origin: str, destination: str) -> None:
+    metadata: dict = dict()
+    with open(origin, 'r', encoding = 'utf-8') as origin: 
+        names = set()
+        for line in origin.readlines():
+            if not line[0:2:].isnumeric(): # regex benutzen 
+                continue
+            line: str = line[line.find('-')+1::]
+            line: str = line[:line.find(':'):].strip()
+            names.add(line)
+    print(f"{names = }")
