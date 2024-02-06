@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+from re import search
 
 
 def get_initial_txt_path(input_directory: str) -> str:    
@@ -52,11 +53,12 @@ def clean_txt(input_dir: str, clean_dir: str) -> None:
 
 
 def create_simple_metadata(origin: str, destination: str) -> None:
+    # ^(\d{2})\.(\d{2})\.(\d{2})\,\s(\d{2})\:(\d{2})\s\-
     metadata: dict = dict()
     with open(origin, 'r', encoding = 'utf-8') as origin: 
         names = set()
         for line in origin.readlines():
-            if not line[0:2:].isnumeric(): # regex benutzen 
+            if not search(r"^(\d{2})\.(\d{2})\.(\d{2})\,\s(\d{2})\:(\d{2})\s\-", line):
                 continue
             line: str = line[line.find('-')+1::]
             line: str = line[:line.find(':'):].strip()
